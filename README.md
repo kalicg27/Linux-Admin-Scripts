@@ -3,7 +3,7 @@
 Small, practical Linux administration scripts suitable for IT Infrastructure roles (CloudLinux, DevOps, SRE, SysAdmin).  
 All scripts aim to be **POSIX-friendly**, include **safety checks**, and print **clear output**.
 
-> Created: 2025-09-24
+> Created: 17.03.2024
 
 ## Contents
 
