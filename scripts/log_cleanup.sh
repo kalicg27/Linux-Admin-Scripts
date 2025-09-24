@@ -1,21 +1,34 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euo pipefail   # exit if error, unset variable, or pipe failure
 
+# ---------------------------------------------------------
+# log_cleanup.sh
+# Cleans up system logs and package caches.
+# - Shrinks systemd journal size (or keeps only recent logs)
+# - Clears package manager cache (apt, yum, dnf, zypper)
+# Helps free disk space and keep logs manageable.
+# ---------------------------------------------------------
+
+# must run as root
 if [[ $EUID -ne 0 ]]; then
-  echo "Please run as root (sudo)." >&2
+  echo "Error: run this script with sudo or as root." >&2
   exit 1
 fi
 
-echo "== Journal cleanup (keeping 7 days or 200M, whichever smaller) =="
+echo "== Cleaning system logs =="
+
+# systemd journal cleanup (keep 7 days or max 200 MB)
 if command -v journalctl >/dev/null 2>&1; then
   journalctl --vacuum-time=7d || true
   journalctl --vacuum-size=200M || true
 else
-  echo "journalctl not found; skipping systemd journal cleanup."
+  echo "No journalctl found (maybe non-systemd system)."
 fi
 
 echo
-echo "== Package caches =="
+echo "== Cleaning package caches =="
+
+# check which package manager exists and clean accordingly
 if command -v apt-get >/dev/null 2>&1; then
   apt-get clean
   apt-get autoremove -y || true
@@ -29,4 +42,4 @@ else
   echo "No known package manager detected."
 fi
 
-echo "Done."
+echo "Cleanup finished."
